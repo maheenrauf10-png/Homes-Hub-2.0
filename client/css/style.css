@@ -1,0 +1,19 @@
+:root {
+  --bg-color: #f9f9f9;
+  --text-color: #333;
+  --card-bg: #fff;
+  --header-bg: #fff;
+  --shadow: rgba(0,0,0,0.1);
+  --primary: #e62b1e;
+}
+
+.dark-mode {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --header-bg: #1a1a1a;
+}
+
+.topbar { background: var(--header-bg); box-shadow: 0 2px 8px var(--shadow); }
+.theme-toggle { color: var(--text-color); }
+.home-btn { color: var(--primary); }

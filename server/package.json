@@ -1,0 +1,29 @@
+{
+  "name": "homes-hub-server",
+  "version": "1.0.0",
+  "description": "Backend server for HOMES HUB real estate platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "real-estate",
+    "property",
+    "homes"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
+

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css/style.css">
+  <title>Post Property - HOMES HUB</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background: var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .home-btn { color: var(--primary); text-decoration:none; font-weight:700; }
+    .theme-toggle { background: transparent; border: 1px solid #ddd; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: var(--text); }
+    .container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 10px; }
+    h1 { color: var(--primary); margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: var(--card); color: var(--text); }
+    button { background: var(--primary); color: white; padding: 12px 30px; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+    .info { background: var(--primary); color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html" class="home-btn">🏠 Home</a>
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
+  </div>
+  <div class="container">
+    <div class="info">
+      <h2>🏠 Sell Your Property with HOMES HUB</h2>
+      <p>Reach thousands of potential buyers. List your property for free!</p>
+    </div>
+
+    <form id="property-form">
+      <div class="form-group">
+        <label for="title">Property Title*</label>
+        <input type="text" id="title" required placeholder="e.g., Modern Apartment in DHA">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location*</label>
+        <input type="text" id="location" required placeholder="e.g., Lahore, DHA Phase 5">
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price (PKR in Crores)*</label>
+        <input type="number" id="price" step="0.1" min="0" required>
+      </div>
+
+      <div class="form-group">
+        <label for="type">Property Type*</label>
+        <select id="type" required>
+          <option value="">Select Type</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="commercial">Commercial</option>
+          <option value="plot">Plot</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="purpose">Purpose*</label>
+        <select id="purpose" required>
+          <option value="buy">For Sale</option>
+          <option value="rent">For Rent</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="beds">Beds</label>
+        <input type="number" id="beds" min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="baths">Baths</label>
+        <input type="number" id="baths" min="1">
+      </div>
+
+      <div class="form-group">
+        <label for="area">Area (sq. ft)</label>
+        <input type="number" id="area" min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="images">Upload Images (Coming Soon)</label>
+        <input type="file" id="images" multiple disabled>
+        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">
+          <em>Image upload will be available after backend integration</em>
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" rows="5" placeholder="Describe your property..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="contact">Your Contact Email*</label>
+        <input type="email" id="contact" required>
+      </div>
+
+      <button type="submit">Submit Property</button>
+    </form>
+  </div>
+  
+  
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.textContent = document.documentElement.classList.contains('dark-mode') ? '☀️' : '🌙';
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark-mode');
+      const isDark = document.documentElement.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
+    // Check authentication
+    if (!localStorage.getItem('token')) {
+      alert('Please login to post a property.');
+      window.location.href = 'login.html';
+    }
+
+    // Initialize Map Picker
+    let map, marker;
+    // Default to Center of Pakistan if no location
+    const defaultLat = 30.3753;
+    const defaultLng = 69.3451;
+
+    function initMap() {
+      map = L.map('map-picker').setView([defaultLat, defaultLng], 5);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      map.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+        setMarker(lat, lng);
+      });
+    }
+
+    function setMarker(lat, lng) {
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+      } else {
+        marker = L.marker([lat, lng]).addTo(map);
+      }
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+    }
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (map) map.setView([latitude, longitude], 13);
+        },
+        () => console.log('Geolocation permission denied')
+      );
+    }
+
+    initMap();
+
+    document.getElementById('property-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.textContent = 'Submitting...';
+      submitBtn.disabled = true;
+
+      try {
+        const priceInCrores = parseFloat(document.getElementById('price').value);
+        const price = priceInCrores * 10000000; // Convert Crores to raw number
+
+        // Get coordinates or use random fallback if user didn't click map
+        let lat = parseFloat(document.getElementById('lat').value);
+        let lng = parseFloat(document.getElementById('lng').value);
+        
+        if (!lat || !lng) {
+          // Fallback to random if not picked (though map is there now)
+          lat = 30 + Math.random() * 4;
+          lng = 70 + Math.random() * 4;
+        }
+
+        const propertyData = {
+          title: document.getElementById('title').value,
+          location: document.getElementById('location').value,
+          price: price,
+          type: document.getElementById('type').value,
+          purpose: document.getElementById('purpose').value,
+          beds: parseInt(document.getElementById('beds').value) || 0,
+          baths: parseInt(document.getElementById('baths').value) || 0,
+          area: document.getElementById('area').value,
+          description: document.getElementById('description').value,
+          contactEmail: document.getElementById('contact').value,
+          // Default images if none provided
+          images: ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200'],
+          lat: lat,
+          lng: lng,
+          // Mock neighborhood data for "Live Snapshot" feature
+          neighborhood: {
+            nearby: ['Schools', 'Parks', 'Shopping Mall', 'Metro Station', 'Hospital'].sort(() => 0.5 - Math.random()).slice(0, 3).join(', '),
+            avgPrice: parseFloat((priceInCrores * (0.9 + Math.random() * 0.2)).toFixed(2)), // +/- 10% of asking price
+            safety: Math.random() > 0.2 ? '9.5/10 (Excellent)' : '8.0/10 (Good)'
+          }
+        };
+
+        await api.createProperty(propertyData);
+        
+        alert('✅ Property submitted successfully!');
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Error posting property:', error);
+        alert(error.message || 'Failed to post property. Please try again.');
+      } finally {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

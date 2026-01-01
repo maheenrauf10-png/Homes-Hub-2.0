@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="referrer" content="no-referrer" />
+  <title>My Favorites - HOMES HUB</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --shadow-dark: rgba(0,0,0,0.15);
+      --border-color: #ddd;
+      --primary: #e62b1e;
+      --primary-hover: #c52519;
+      --feature-bg: #f8f9fa;
+      --feature-text: #777;
+      --empty-text: #666;
+      --footer-text: #777;
+    }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --header-bg: #1a1a1a;
+      --shadow: rgba(0,0,0,0.3);
+      --shadow-dark: rgba(0,0,0,0.4);
+      --border-color: #333;
+      --feature-bg: #2a2a2a;
+      --feature-text: #aaa;
+      --empty-text: #aaa;
+      --footer-text: #aaa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    .header {
+      background: var(--header-bg);
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      color: var(--primary);
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .contact-us-btn {
+      background: var(--primary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.4rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--border-color);
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin: 20px 0;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin-top: 20px;
+    }
+
+    .property-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px var(--shadow-dark);
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .property-info {
+      padding: 1.2rem;
+    }
+
+    .property-info h3 {
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+    }
+
+    .price {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      background: var(--card-bg);
+      border-radius: 10px;
+      color: var(--empty-text);
+      grid-column: 1 / -1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0 20px;
+      color: var(--footer-text);
+      font-size: 0.9rem;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        background: var(--header-bg);
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        box-shadow: 0 4px 10px var(--shadow);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+      }
+
+      .nav.active {
+        transform: translateY(0);
+      }
+
+      .nav a, .contact-us-btn {
+        margin: 10px 0;
+        width: 100%;
+        text-align: left;
+      }
+
+      .theme-toggle {
+        position: static;
+        margin-top: 15px;
+      }
+
+      .favorites-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">HOMES HUB</h1>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="nav-menu">
+      <a href="index.html">Buy</a>
+      <a href="index.html">Rent</a>
+      <a href="index.html">Commercial</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="favorites.html" style="color: var(--primary);">❤️ Favorites</a>
+      <a href="contact.html" class="contact-us-btn">Contact Us</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Listings</a>
+    <h2>My Favorite Properties</h2>
+    <div class="favorites-grid" id="favorites-grid"></div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 HOMES HUB | My Favorites</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // ===== FAVORITES LOGIC =====
+    const favoritesGrid = document.getElementById('favorites-grid');
+
+    async function loadFavorites() {
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      
+      if (favorites.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      favoritesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">Loading your favorites...</p>';
+
+      try {
+        // Fetch details for each favorite property
+        // Note: In a production app, you'd want a specific endpoint like /api/properties/favorites
+        // to fetch them all in one go. Here we fetch them in parallel.
+        const propertyPromises = favorites.map(id => api.getPropertyById(id)
+          .then(data => data.property)
+          .catch(err => null) // Ignore errors for deleted properties
+        );
+        
+        const results = await Promise.all(propertyPromises);
+        const validProperties = results.filter(p => p !== null);
+        
+        if (validProperties.length === 0) {
+          renderEmptyState();
+        } else {
+          renderFavorites(validProperties);
+        }
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        favoritesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:red;">Error loading favorites. Please try again.</p>';
+      }
+    }
+
+    function renderEmptyState() {
+      favoritesGrid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:3rem;">
+          <p style="font-size:1.2rem;color:var(--empty-text);margin-bottom:1rem;">You haven't saved any properties yet.</p>
+          <a href="index.html" style="background:var(--primary);color:white;padding:10px 20px;text-decoration:none;border-radius:6px;">Browse Properties</a>
+        </div>
+      `;
+    }
+
+    function renderFavorites(properties) {
+      favoritesGrid.innerHTML = '';
+      
+      properties.forEach(property => {
+        // Handle price display
+        const displayPrice = property.price >= 10000000 
+            ? `PKR ${(property.price / 10000000).toFixed(2)} Crore` 
+            : `PKR ${(property.price / 100000).toFixed(2)} Lakh`;
+
+        const card = document.createElement('div');
+        card.className = 'property-card';
+        const rawImg = (property.images && property.images.length > 0) 
+          ? property.images[0] 
+          : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600';
+        const imgSrc = window.proxyImageUrl ? window.proxyImageUrl(rawImg) : rawImg;
+        // Add basic card styles dynamically if not present or reuse existing
+        card.style.background = 'var(--card-bg)';
+        card.style.borderRadius = '10px';
+        card.style.overflow = 'hidden';
+        card.style.boxShadow = '0 4px 10px var(--shadow)';
+        
+        card.innerHTML = `
+          <div style="position:relative;">
+            <a href="property.html?id=${property._id}" style="text-decoration:none;color:inherit;display:block;">
+              <img src="${imgSrc}" 
+                   alt="${property.title}" 
+                   style="width:100%;height:200px;object-fit:cover;"
+                   crossorigin="anonymous" referrerpolicy="no-referrer"
+                   onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600'">
+            </a>
+            <button class="remove-btn" data-id="${property._id}" 
+                    style="position:absolute;top:10px;right:10px;background:white;color:var(--primary);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+              ✕
+            </button>
+          </div>
+          <div style="padding:1.2rem;">
+            <h3 style="margin-bottom:0.5rem;color:var(--text-color);">${property.title}</h3>
+            <p style="color:var(--feature-text);margin:0.3rem 0;">📍 ${property.location}</p>
+            <p style="color:var(--primary);font-weight:bold;font-size:1.1rem;">${displayPrice}</p>
+          </div>
+        `;
+        favoritesGrid.appendChild(card);
+      });
+    }
+
+    // Handle Remove Button
+    favoritesGrid.addEventListener('click', (e) => {
+      if (e.target.closest('.remove-btn')) {
+        const id = e.target.closest('.remove-btn').dataset.id;
+        removeFromFavorites(id);
+      }
+    });
+
+    function removeFromFavorites(id) {
+      let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      favorites = favorites.filter(favId => favId !== id);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      
+      // Re-render
+      loadFavorites();
+    }
+
+    // Initialize
+    loadFavorites();
+  </script>
+</body>
+</html>

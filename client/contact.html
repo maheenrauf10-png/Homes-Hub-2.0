@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact - HOMES HUB</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9f9f9; padding: 20px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .home-btn { color: #e62b1e; text-decoration:none; font-weight:700; }
+    .theme-toggle { background: transparent; border: 1px solid #ddd; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+    .container { max-width: 600px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .logo { color: #e62b1e; font-size: 1.8rem; font-weight: bold; text-align: center; margin-bottom: 20px; text-transform: uppercase; }
+    .back-btn { display: inline-block; margin-bottom: 20px; color: #e62b1e; text-decoration: none; font-weight: 600; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+    textarea { height: 120px; resize: vertical; }
+    .contact-btn { background: #e62b1e; color: white; padding: 14px 30px; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; text-align: center; }
+    .info-box { background: #e8f4f8; padding: 15px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #2980b9; }
+    .success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; text-align: center; display: none; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html" class="home-btn">🏠 Home</a>
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
+  </div>
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Home</a>
+    <h1 class="logo">HOMES HUB</h1>
+    
+    <div class="info-box">
+      <strong>📧 Contact Us</strong><br>
+      Send your inquiry to our team. We'll respond within 24 hours!
+    </div>
+
+    <form id="contact-form">
+      <div class="form-group">
+        <label for="name">Your Name *</label>
+        <input type="text" id="name" required placeholder="Enter your full name">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Your Email *</label>
+        <input type="email" id="email" required placeholder="Enter your email address">
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter your phone number (optional)">
+      </div>
+      
+      <div class="form-group">
+        <label for="message">Your Message *</label>
+        <textarea id="message" required placeholder="Tell us about your inquiry..."></textarea>
+      </div>
+      
+      <button type="submit" class="contact-btn">Send Message</button>
+    </form>
+
+    <div class="success-message" id="success-message">
+      ✅ Your message has been sent successfully!<br>
+      We'll contact you at <span id="reply-email"></span> within 24 hours.
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.textContent = document.documentElement.classList.contains('dark-mode') ? '☀️' : '🌙';
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark-mode');
+      const isDark = document.documentElement.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
+    document.getElementById('contact-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        message: document.getElementById('message').value
+      };
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to send');
+        document.getElementById('reply-email').textContent = payload.email;
+        document.getElementById('success-message').style.display = 'block';
+        document.getElementById('contact-form').style.display = 'none';
+      } catch (err) {
+        alert('Error sending message. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

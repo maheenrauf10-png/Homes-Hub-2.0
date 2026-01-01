@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="referrer" content="no-referrer" />
+  <title>HOMES HUB - Real Estate Platform</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --shadow-dark: rgba(0,0,0,0.15);
+      --border-color: #ddd;
+      --primary: #e62b1e;
+      --primary-hover: #c52519;
+      --feature-bg: #f8f9fa;
+      --feature-text: #777;
+      --empty-text: #666;
+      --footer-text: #777;
+    }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --header-bg: #1a1a1a;
+      --shadow: rgba(0,0,0,0.3);
+      --shadow-dark: rgba(0,0,0,0.4);
+      --border-color: #333;
+      --feature-bg: #2a2a2a;
+      --feature-text: #aaa;
+      --empty-text: #aaa;
+      --footer-text: #aaa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background: var(--bg-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: var(--header-bg);
+      box-shadow: 0 2px 10px var(--shadow);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: var(--primary);
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .contact-us-btn {
+      background: var(--primary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.4rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--border-color);
+    }
+
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                  url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      height: 50vh;
+      display: flex;
+      align-items: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      padding: 1.5rem 0;
+      background: var(--card-bg);
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px var(--shadow);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 0.7rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      min-width: 140px;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    #search-btn {
+      padding: 0.7rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    #search-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .listings {
+      padding: 2rem 0;
+    }
+
+    .listings h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--text-color);
+    }
+
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .property-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px var(--shadow-dark);
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .property-info {
+      padding: 1.2rem;
+    }
+
+    .property-info h3 {
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+    }
+
+    .property-info p {
+      color: var(--feature-text);
+      margin: 0.3rem 0;
+    }
+
+    .price {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .map-section {
+      padding: 3rem 0;
+      background: var(--card-bg);
+      margin: 2rem 0;
+      border-radius: 10px;
+    }
+
+    .map-section h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+    }
+
+    #map {
+      height: 500px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px var(--shadow-dark);
+    }
+
+    .leaflet-popup-content {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      color: var(--text-color);
+    }
+
+    .leaflet-popup-content a {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--footer-text);
+      font-size: 0.9rem;
+    }
+
+    /* Back to Top Button */
+    #back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: #e62b1e;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Virtual Assistant */
+    .chatbot-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: #e62b1e;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(230, 43, 30, 0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .chatbot-btn:hover {
+      background: #c52519;
+      transform: scale(1.1);
+    }
+
+    .chatbot-window {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 450px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .chatbot-header {
+      background: #e62b1e;
+      color: white;
+      padding: 15px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+
+    .chatbot-message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.4;
+    }
+
+    .bot-message {
+      background: #e0e0e0;
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+    }
+
+    .user-message {
+      background: #e62b1e;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      margin-left: auto;
+    }
+
+    .chatbot-input {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #eee;
+    }
+
+    .chatbot-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chatbot-input button {
+      background: #e62b1e;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        background: var(--header-bg);
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        box-shadow: 0 4px 10px var(--shadow);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+      }
+
+      .nav.active {
+        transform: translateY(0);
+      }
+
+      .nav a, .contact-us-btn {
+        margin: 10px 0;
+        width: 100%;
+        text-align: left;
+      }
+
+      .theme-toggle {
+        position: static;
+        margin-top: 15px;
+      }
+
+      .hero h2 {
+        font-size: 1.8rem;
+      }
+
+      .filters {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .filter-group input,
+      .filter-group select {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .property-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chatbot-window {
+        width: 90%;
+        bottom: 80px;
+        right: 5%;
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">HOMES HUB</h1>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="nav-menu">
+      <a href="index.html?purpose=buy">Buy</a>
+      <a href="index.html?purpose=rent">Rent</a>
+      <a href="index.html?type=commercial">Commercial</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="favorites.html" style="color: var(--primary);">❤️ Favorites</a>
+    <a href="contact.html" class="contact-us-btn">
+  
+
+        Contact Us
+      </a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        🌙
+      </button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h2>Find Your Dream Home in Pakistan</h2>
+      <a href="post-property.html" style="background:#e62b1e;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin-top:15px;">
+        🏠 Sell Your Property
+      </a>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="filters">
+      <div class="filter-group">
+        <select id="purpose">
+          <option value="">All</option>
+          <option value="buy">Buy</option>
+          <option value="rent">Rent</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <input type="text" id="location-input" placeholder="Location (e.g. DHA, Lahore)" />
+      </div>
+      <div class="filter-group">
+        <select id="property-type">
+          <option value="">Property Type</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="commercial">Commercial</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <input type="number" id="min-price" placeholder="Min Price (Cr)" min="0" step="0.1" />
+      </div>
+      <div class="filter-group">
+        <input type="number" id="beds" placeholder="Beds" min="0" max="10" />
+      </div>
+      <button id="search-btn">Search</button>
+    </div>
+  </div>
+
+  <section class="listings">
+    <div class="container">
+      <h2>Featured Properties</h2>
+      <div class="property-grid" id="property-grid"></div>
+    </div>
+  </section>
+
+  <section class="map-section">
+    <div class="container">
+      <h2>Explore Homes on Map</h2>
+      <div id="map"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 HOMES HUB | Your Trusted Real Estate Partner</p>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top">↑</button>
+
+  <!-- Virtual Assistant -->
+  <button class="chatbot-btn" id="chatbot-btn">💬</button>
+  <div class="chatbot-window" id="chatbot-window">
+    <div class="chatbot-header">
+      <span>HOMES HUB Assistant</span>
+      <button id="close-chat" style="background:none; color:white; border:none; font-size:1.5rem; cursor:pointer;">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="chatbot-message bot-message">
+        Hello! I'm your HOMES HUB assistant. How can I help you today?
+        <br><br>
+        You can ask me about:
+        <br>• Property pricing
+        <br>• Neighborhood insights  
+        <br>• Saving favorites
+        <br>• Contacting agents
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="chatbot-input" placeholder="Type your question...">
+      <button id="send-message">➤</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    
+
+    // ===== MOBILE MENU =====
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('nav-menu').classList.toggle('active');
+    });
+
+    // ===== PROPERTIES =====
+    let properties = [];
+
+    function applyFiltersFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const qp = params.get('purpose');
+      const qt = params.get('type');
+      const ql = params.get('location');
+      if (qp) {
+        const el = document.getElementById('purpose');
+        if (el) el.value = qp;
+      }
+      if (qt) {
+        const el = document.getElementById('property-type');
+        if (el) el.value = qt;
+      }
+      if (ql) {
+        const el = document.getElementById('location-input');
+        if (el) el.value = ql;
+      }
+    }
+
+    function getCurrentFilters() {
+      const purpose = document.getElementById('purpose').value;
+      const location = document.getElementById('location-input').value.trim();
+      const type = document.getElementById('property-type').value;
+      const minPriceCr = parseFloat(document.getElementById('min-price').value) || 0;
+      const beds = parseInt(document.getElementById('beds').value) || 0;
+
+      const filters = {};
+      if (purpose) filters.purpose = purpose;
+      if (location) filters.location = location;
+      if (type) filters.type = type;
+      if (minPriceCr > 0) filters.minPrice = minPriceCr * 10000000; // Convert Crores to PKR
+      if (beds > 0) filters.beds = beds;
+      return filters;
+    }
+
+    async function fetchProperties(filters = {}) {
+      try {
+        const data = await api.getProperties(filters);
+        const propertiesData = data.properties || [];
+        properties = propertiesData.map(p => ({
+          ...p,
+          id: p._id,
+          image: p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600',
+          displayPrice: p.price >= 10000000
+            ? `PKR ${(p.price / 10000000).toFixed(2)} Crore`
+            : `PKR ${(p.price / 100000).toFixed(2)} Lakh`
+        }));
+        filterAndDisplayProperties();
+      } catch (error) {
+        console.error('Error loading properties:', error);
+        document.getElementById('property-grid').innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:2rem;">Error loading properties. Please ensure the server is running.</p>';
+      }
+    }
+
+    const propertyGrid = document.getElementById('property-grid');
+    let map;
+
+    map = L.map('map').setView([30.3753, 69.3451], 6);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    function filterAndDisplayProperties() {
+      const purpose = document.getElementById('purpose').value;
+      const locationInput = document.getElementById('location-input').value.toLowerCase();
+      const propertyType = document.getElementById('property-type').value;
+      // Convert input (Cr) to raw number (PKR)
+      const minPriceInput = parseFloat(document.getElementById('min-price').value) || 0;
+      const minPrice = minPriceInput * 10000000;
+      
+      const beds = parseInt(document.getElementById('beds').value) || 0;
+
+      const filtered = properties.filter(property => {
+        const matchesPurpose = !purpose || (property.purpose || '').toLowerCase() === purpose.toLowerCase();
+        const matchesLocation = property.location.toLowerCase().includes(locationInput);
+        const matchesType = !propertyType || property.type === propertyType;
+        const matchesPrice = property.price >= minPrice;
+        const matchesBeds = beds === 0 || property.beds >= beds;
+        return matchesPurpose && matchesLocation && matchesType && matchesPrice && matchesBeds;
+      });
+
+      propertyGrid.innerHTML = '';
+      if (filtered.length === 0) {
+        const emptyMsg = purpose === 'rent'
+          ? 'No rental properties available at the moment.'
+          : 'No properties match your filters.';
+        propertyGrid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--empty-text);padding:2rem;background:var(--card-bg);border-radius:8px;">${emptyMsg}</p>`;
+      } else {
+        filtered.forEach(property => {
+          const isSaved = JSON.parse(localStorage.getItem('favorites'))?.includes(property.id) || false;
+          const rawImg = property.image;
+          const imgSrc = window.proxyImageUrl ? window.proxyImageUrl(rawImg) : rawImg;
+          const fallbackRaw = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600';
+          const fallbackSrc = window.proxyImageUrl ? window.proxyImageUrl(fallbackRaw) : fallbackRaw;
+          const card = document.createElement('div');
+          card.className = 'property-card';
+          card.innerHTML = `
+            <div style="position:relative;">
+              <a href="property.html?id=${property.id}" style="text-decoration:none;color:inherit;display:block;">
+                <img src="${imgSrc}" alt="${property.title}" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='${fallbackSrc}'">
+              </a>
+              <button class="save-btn" data-id="${property.id}" style="position:absolute;top:10px;right:10px;background:${isSaved?'var(--primary)':'var(--card-bg)'};color:${isSaved?'white':'var(--primary)'};border:2px solid var(--primary);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;padding:0;">❤️</button>
+            </div>
+            <div class="property-info">
+              <h3>${property.title}</h3>
+              <p>📍 ${property.location}</p>
+              <p class="price">${property.displayPrice}</p>
+              <p>🛏️ ${property.beds > 0 ? property.beds + ' Beds' : 'Commercial Space'}</p>
+            </div>
+          `;
+          propertyGrid.appendChild(card);
+        });
+      }
+      updateMapMarkers(filtered);
+    }
+
+    function updateMapMarkers(filteredProperties) {
+      map.eachLayer(layer => {
+        if (layer instanceof L.Marker) map.removeLayer(layer);
+      });
+
+      const validProperties = filteredProperties.filter(p => p.lat && p.lng);
+
+      if (validProperties.length > 0) {
+        validProperties.forEach(property => {
+          const marker = L.marker([property.lat, property.lng]).addTo(map);
+          const popupContent = `
+            <b>${property.title}</b><br>
+            📍 ${property.location}<br>
+            💰 <strong>${property.displayPrice}</strong><br>
+            🛏️ ${property.beds > 0 ? property.beds + ' Beds' : 'Commercial'}<br>
+            <a href="property.html?id=${property.id}" style="color:var(--primary);">View Details</a>
+          `;
+          marker.bindPopup(popupContent);
+        });
+        const group = new L.featureGroup(validProperties.map(p => L.marker([p.lat, p.lng])));
+        map.fitBounds(group.getBounds().pad(0.1));
+      } else {
+        map.setView([30.3753, 69.3451], 6);
+      }
+    }
+
+    function toggleFavorite(propertyId) {
+      let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      if (favorites.includes(propertyId)) {
+        favorites = favorites.filter(id => id !== propertyId);
+      } else {
+        favorites.push(propertyId);
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      filterAndDisplayProperties();
+    }
+
+    propertyGrid.addEventListener('click', (e) => {
+      if (e.target.closest('.save-btn')) {
+        const id = e.target.closest('.save-btn').dataset.id;
+        toggleFavorite(id);
+      }
+    });
+
+    document.getElementById('search-btn').addEventListener('click', () => fetchProperties(getCurrentFilters()));
+    document.querySelectorAll('.filters input, .filters select').forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') fetchProperties(getCurrentFilters());
+      });
+    });
+
+    document.getElementById('purpose').addEventListener('change', () => fetchProperties(getCurrentFilters()));
+
+    // Back to top button
+    const backToTopButton = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopButton.style.display = 'block';
+      } else {
+        backToTopButton.style.display = 'none';
+      }
+    });
+    backToTopButton.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ===== VIRTUAL ASSISTANT =====
+    const chatbotBtn = document.getElementById('chatbot-btn');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const closeChat = document.getElementById('close-chat');
+    const chatMessages = document.getElementById('chatbot-messages');
+    const chatInput = document.getElementById('chatbot-input');
+    const sendMessage = document.getElementById('send-message');
+
+    chatbotBtn.addEventListener('click', () => {
+      chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    closeChat.addEventListener('click', () => {
+      chatbotWindow.style.display = 'none';
+    });
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `chatbot-message ${isUser ? 'user-message' : 'bot-message'}`;
+      messageDiv.innerHTML = text;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    sendMessage.addEventListener('click', processMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') processMessage();
+    });
+
+    function processMessage() {
+      const input = chatInput.value.trim().toLowerCase();
+      if (!input) return;
+      
+      addMessage(input, true);
+      chatInput.value = '';
+      
+      let response = "I'm not sure how to help with that. Try asking about pricing, neighborhoods, favorites, or contacting agents.";
+      
+      if (input.includes('price') || input.includes('cost') || input.includes('expensive')) {
+        response = "I can help you understand property pricing! Each property page shows if the price is fair, above, or below market average compared to similar homes in the area. Look for the 📊 Price Fairness Checker!";
+      }
+      else if (input.includes('neighbor') || input.includes('area') || input.includes('location')) {
+        response = "Check the 'LIVE NEIGHBORHOOD SNAPSHOT' on any property page! It shows nearby schools, hospitals, safety ratings, and average prices for that area.";
+      }
+      else if (input.includes('save') || input.includes('favorite') || input.includes('heart')) {
+        response = "To save a property, click the ❤️ icon on any listing! You can view all your favorites by clicking the 'Favorites' link in the navigation.";
+      }
+      else if (input.includes('contact') || input.includes('agent') || input.includes('email')) {
+        response = "Click the 'Contact Agent' button on any property page to send an email directly to our team at maheenrauf55@gmail.com!";
+      }
+      else if (input.includes('hello') || input.includes('hi') || input.includes('hey')) {
+        response = "Hello! I'm your HOMES HUB assistant. How can I help you find your dream home today?";
+      }
+      else if (input.includes('thank')) {
+        response = "You're welcome! Happy house hunting! 🏠";
+      }
+      
+      setTimeout(() => addMessage(response), 500);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => { applyFiltersFromQuery(); fetchProperties(getCurrentFilters()); });
+  </script>
+</body>
+</html>

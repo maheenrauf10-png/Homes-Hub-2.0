@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="referrer" content="no-referrer" />
+  <title>Property Details - HOMES HUB</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --shadow-dark: rgba(0,0,0,0.15);
+      --border-color: #ddd;
+      --primary: #e62b1e;
+      --primary-hover: #c52519;
+      --feature-bg: #f8f9fa;
+      --feature-text: #777;
+      --footer-text: #777;
+    }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --header-bg: #1a1a1a;
+      --shadow: rgba(0,0,0,0.3);
+      --shadow-dark: rgba(0,0,0,0.4);
+      --border-color: #333;
+      --feature-bg: #2a2a2a;
+      --feature-text: #aaa;
+      --footer-text: #aaa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); transition: background 0.3s, color 0.3s; }
+    .container { width: 90%; max-width: 1000px; margin: 0 auto; padding: 20px 0; }
+    .header { background: var(--header-bg); box-shadow: 0 2px 10px var(--shadow); padding: 1rem 0; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+    .logo { color: var(--primary); font-size: 1.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: -0.5px; }
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; color: var(--text-color); cursor: pointer; }
+    .nav { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .nav a { text-decoration: none; color: var(--text-color); font-weight: 600; }
+    .contact-us-btn { background: var(--primary); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; }
+    .theme-toggle { background: none; border: none; color: var(--text-color); font-size: 1.4rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.3s; }
+    .theme-toggle:hover { background: var(--border-color); }
+    .back-btn { display: inline-block; margin-bottom: 20px; color: var(--primary); text-decoration: none; font-weight: 600; }
+    .detail-hero { width: 100%; height: 400px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px var(--shadow-dark); position: relative; cursor: pointer; }
+    .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-info { background: var(--card-bg); padding: 30px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 15px var(--shadow); }
+    .detail-info h1 { font-size: 1.8rem; margin-bottom: 10px; color: var(--text-color); }
+    .location { display: flex; align-items: center; margin-bottom: 15px; color: var(--feature-text); }
+    .price { font-size: 1.6rem; color: var(--primary); font-weight: bold; margin: 15px 0; }
+    .features { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+    .feature { background: var(--feature-bg); padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 100px; box-shadow: 0 2px 5px var(--shadow); }
+    .feature-value { font-size: 1.3rem; font-weight: bold; color: var(--text-color); }
+    .feature-label { font-size: 0.85rem; color: var(--feature-text); }
+    .description { margin: 25px 0; line-height: 1.8; color: var(--text-color); }
+
+    /* Price Fairness Checker */
+    .price-checker {
+      margin: 25px 0;
+      padding: 15px;
+      background: #e8f4f8;
+      border-radius: 8px;
+      border-left: 4px solid #2980b9;
+    }
+    #price-message {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .contact-btn { background: var(--primary); color: white; border: none; padding: 14px 30px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+    .contact-btn:hover { background: var(--primary-hover); }
+    footer { text-align: center; padding: 30px 0 20px; color: var(--footer-text); font-size: 0.9rem; }
+
+    /* Neighborhood Insights */
+    .insights-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    .insights-title {
+      font-size: 0.9rem;
+      color: var(--feature-text);
+      margin-bottom: 8px;
+    }
+    .insights-value {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    #neighborhood-data {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .insights-card {
+      background: var(--feature-bg);
+      padding: 15px;
+      border-radius: 8px;
+      min-width: 180px;
+      box-shadow: 0 2px 5px var(--shadow);
+    }
+
+    /* Gallery Modal */
+    #gallery-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    #modal-image {
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    /* Virtual Assistant */
+    .chatbot-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: #e62b1e;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(230, 43, 30, 0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .chatbot-btn:hover {
+      background: #c52519;
+      transform: scale(1.1);
+    }
+
+    .chatbot-window {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 450px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .chatbot-header {
+      background: #e62b1e;
+      color: white;
+      padding: 15px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+
+    .chatbot-message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.4;
+    }
+
+    .bot-message {
+      background: #e0e0e0;
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+    }
+
+    .user-message {
+      background: #e62b1e;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      margin-left: auto;
+    }
+
+    .chatbot-input {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #eee;
+    }
+
+    .chatbot-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chatbot-input button {
+      background: #e62b1e;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        background: var(--header-bg);
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        box-shadow: 0 4px 10px var(--shadow);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+      }
+
+      .nav.active {
+        transform: translateY(0);
+      }
+
+      .nav a, .contact-us-btn {
+        margin: 10px 0;
+        width: 100%;
+        text-align: left;
+      }
+
+      .theme-toggle {
+        position: static;
+        margin-top: 15px;
+      }
+
+      .detail-hero { height: 250px; }
+      .detail-info { padding: 20px; }
+      .features { flex-direction: column; }
+      .feature { width: 100%; }
+      
+      #neighborhood-data {
+        flex-direction: column;
+      }
+
+      .chatbot-window {
+        width: 90%;
+        bottom: 80px;
+        right: 5%;
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">HOMES HUB</h1>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="nav-menu">
+      <a href="index.html?purpose=buy">Buy</a>
+      <a href="index.html?purpose=rent">Rent</a>
+      <a href="index.html?type=commercial">Commercial</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="favorites.html" style="color: var(--primary);">❤️ Favorites</a>
+      <a href="contact.html" class="contact-us-btn">
+  Contact Us
+</a>
+  
+      </a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Listings</a>
+    <div class="detail-hero" onclick="openGallery()">
+      <img id="detail-image" src="" alt="Property" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200'">
+      <div style="position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">
+        Click to enlarge
+      </div>
+    </div>
+    <div class="detail-info">
+      <h1 id="detail-title"></h1>
+      <div class="location" id="detail-location"></div>
+      <div class="price" id="detail-price"></div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-value" id="beds-value">-</div>
+          <div class="feature-label">Beds</div>
+        </div>
+        <div class="feature">
+          <div class="feature-value" id="baths-value">-</div>
+          <div class="feature-label">Baths</div>
+        </div>
+        <div class="feature">
+          <div class="feature-value" id="area-value">-</div>
+          <div class="feature-label">Area</div>
+        </div>
+        <div class="feature">
+          <div class="feature-value" id="type-value">-</div>
+          <div class="feature-label">Type</div>
+        </div>
+      </div>
+
+      <div class="description" id="detail-description">
+        This stunning property offers modern amenities, prime location, and excellent investment potential. 
+        Perfect for families looking for comfort and convenience in a secure neighborhood.
+      </div>
+
+      <!-- Price Fairness Checker -->
+      <div class="price-checker">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.8rem;">📊</span>
+          <div>
+            <div id="price-message" style="font-weight: bold; color: #2c3e50;"></div>
+            <div style="font-size: 0.9rem; color: #7f8c8d;">Based on similar properties in this area</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="contact-btn" onclick="contactAgent()">
+        Contact Agent
+      </button>
+
+      <!-- Neighborhood Insights -->
+      <div class="insights-section">
+        <h3>📍 LIVE NEIGHBORHOOD SNAPSHOT</h3>
+        <div id="neighborhood-data">
+          <!-- Data will load here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Gallery Modal -->
+  <div id="gallery-modal">
+    <span onclick="closeGallery()" style="position:absolute; top:20px; right:30px; color:white; font-size:30px; cursor:pointer;">&times;</span>
+    <img id="modal-image" src="" crossorigin="anonymous" referrerpolicy="no-referrer">
+  </div>
+
+  <!-- Virtual Assistant -->
+  <button class="chatbot-btn" id="chatbot-btn">💬</button>
+  <div class="chatbot-window" id="chatbot-window">
+    <div class="chatbot-header">
+      <span>HOMES HUB Assistant</span>
+      <button id="close-chat" style="background:none; color:white; border:none; font-size:1.5rem; cursor:pointer;">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="chatbot-message bot-message">
+        Hello! I'm your HOMES HUB assistant. How can I help you today?
+        <br><br>
+        You can ask me about:
+        <br>• Property pricing
+        <br>• Neighborhood insights  
+        <br>• Saving favorites
+        <br>• Contacting agents
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="chatbot-input" placeholder="Type your question...">
+      <button id="send-message">➤</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 HOMES HUB | Property Details</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    
+
+    // ===== FETCH PROPERTY DETAILS =====
+    async function fetchPropertyDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const propertyId = urlParams.get('id');
+
+      if (!propertyId) {
+        showError('No property ID specified.');
+        return;
+      }
+
+      try {
+        const data = await api.getPropertyById(propertyId);
+        const property = data.property;
+        
+        renderProperty(property);
+      } catch (error) {
+        console.error('Error fetching property:', error);
+        showError('Property not found or server error.');
+      }
+    }
+
+    function renderProperty(property) {
+      const rawImg = property.images && property.images.length > 0 ? property.images[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200';
+      const imgSrc = window.proxyImageUrl ? window.proxyImageUrl(rawImg) : rawImg;
+      const fallbackRaw = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200';
+      const fallbackSrc = window.proxyImageUrl ? window.proxyImageUrl(fallbackRaw) : fallbackRaw;
+      const imgEl = document.getElementById('detail-image');
+      imgEl.onerror = () => { imgEl.src = fallbackSrc; };
+      imgEl.src = imgSrc;
+      document.getElementById('detail-title').textContent = property.title;
+      document.getElementById('detail-location').textContent = `📍 ${property.location}`;
+      
+      const displayPrice = property.price >= 10000000 
+            ? `PKR ${(property.price / 10000000).toFixed(2)} Crore` 
+            : `PKR ${(property.price / 100000).toFixed(2)} Lakh`;
+      document.getElementById('detail-price').textContent = displayPrice;
+
+      document.getElementById('beds-value').textContent = property.beds || '—';
+      document.getElementById('baths-value').textContent = property.baths || '—';
+      document.getElementById('area-value').textContent = property.area || '—';
+      document.getElementById('type-value').textContent = property.type;
+      
+      // ===== PRICE FAIRNESS CHECKER =====
+      if (property.price && property.neighborhood && property.neighborhood.avgPrice) {
+        // avgPrice in DB is likely in same unit or needs conversion. 
+        // Assuming DB stores raw numbers for price, but neighborhood.avgPrice might be in Crores if entered manually or calculated.
+        // Let's assume avgPrice in DB is in Crores for now as per previous hardcoded data (2.3 etc).
+        // But wait, the schema defines avgPrice as Number. If user enters it via form, it might be raw or scaled.
+        // The hardcoded data had actualPrice: 2.5 (Crore) and avgPrice: 2.3 (Crore).
+        // The backend price is likely raw (25000000).
+        // So we need to normalize.
+        
+        let actual = property.price;
+        let avg = property.neighborhood.avgPrice;
+        
+        // Heuristic: if avg is small (< 1000), assume it's in Crores and convert to raw
+        if (avg < 1000) avg = avg * 10000000;
+
+        const difference = ((actual - avg) / avg * 100).toFixed(1);
+        
+        const messageEl = document.getElementById('price-message');
+        if (difference > 10) {
+          messageEl.innerHTML = `⚠️ This price is <strong>${difference}% above</strong> market average`;
+          messageEl.style.color = "#e74c3c";
+        } else if (difference < -10) {
+          messageEl.innerHTML = `✅ This price is <strong>${Math.abs(difference)}% below</strong> market average`;
+          messageEl.style.color = "#27ae60";
+        } else {
+          messageEl.innerHTML = `✅ This price is <strong>fair</strong> (within 10% of market average)`;
+          messageEl.style.color = "#2980b9";
+        }
+      }
+      
+      // Display neighborhood insights
+      if (property.neighborhood) {
+        const insightsContainer = document.getElementById('neighborhood-data');
+        insightsContainer.innerHTML = `
+          <div class="insights-card">
+            <div class="insights-title">Nearby Facilities</div>
+            <div class="insights-value">${property.neighborhood.nearby || 'Not available'}</div>
+          </div>
+          <div class="insights-card">
+            <div class="insights-title">Avg. Price Trend</div>
+            <div class="insights-value">PKR ${property.neighborhood.avgPrice || '-'} Cr</div>
+          </div>
+          <div class="insights-card">
+            <div class="insights-title">Safety Rating</div>
+            <div class="insights-value">${property.neighborhood.safety || '-'}</div>
+          </div>
+        `;
+      }
+    }
+
+    function showError(msg) {
+      document.querySelector('.detail-info').innerHTML = `
+        <h2>${msg}</h2>
+        <a href="index.html" style="color:var(--primary);display:inline-block;margin-top:10px;">← Back to Listings</a>
+      `;
+    }
+
+    // Initialize
+    fetchPropertyDetails();
+  </script>
+</body>
+</html>
+
+
+

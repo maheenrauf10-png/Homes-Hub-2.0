@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Unit Tests</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #222; color: #fff; }
+    .pass { color: #4caf50; }
+    .fail { color: #f44336; }
+    .suite { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+    h2 { margin: 0 0 10px; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Running Tests...</h1>
+  <div id="output"></div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    const output = document.getElementById('output');
+    
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      div.textContent = message;
+      if (type === 'pass') div.className = 'pass';
+      if (type === 'fail') div.className = 'fail';
+      output.appendChild(div);
+    }
+
+    async function test(name, fn) {
+      try {
+        await fn();
+        log(`✔ ${name}`, 'pass');
+      } catch (error) {
+        log(`✘ ${name}: ${error.message}`, 'fail');
+        console.error(error);
+      }
+    }
+
+    async function runTests() {
+      log('Starting API Tests...', 'info');
+
+      // Test 1: API Config
+      await test('API Configuration should be loaded', async () => {
+        if (!api) throw new Error('API instance not found');
+        if (typeof api.getProperties !== 'function') throw new Error('getProperties is missing');
+      });
+
+      // Test 2: Get Properties (assuming server is running)
+      await test('fetchProperties should return data', async () => {
+        const data = await api.getProperties();
+        if (!data.properties) throw new Error('Response missing properties array');
+        log(`  - Fetched ${data.properties.length} properties`);
+      });
+
+      // Test 3: Auth Methods
+      await test('Auth methods should exist', async () => {
+        if (typeof api.login !== 'function') throw new Error('login missing');
+        if (typeof api.register !== 'function') throw new Error('register missing');
+      });
+
+      log('Tests Completed.', 'info');
+    }
+
+    runTests();
+  </script>
+</body>
+</html>
